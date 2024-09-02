@@ -46,7 +46,6 @@ jobs:
         run: |
           sudo apt-get clean
           sudo rm -rf /var/lib/apt/lists/*
-          rm -rf /tmp/*
           df -h  # Show disk space usage
 
       - name: 克隆 ImmortalWrt 仓库 (Clone ImmortalWrt repo)
