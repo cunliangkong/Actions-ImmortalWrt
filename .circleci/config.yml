@@ -73,9 +73,9 @@ jobs:
           name: 多线程编译 ImmortalWrt (Build ImmortalWrt multithreading)
           command: |
             cd ImmortalWrt
+            if [ $(nproc) -gt 8 ]; then con=$(( $(nproc) / 2 + 3 )); else con=$(nproc); fi
             make defconfig
-            [ `nproc` -gt 8 ] && con=$[`nproc`/2+3] || con=`nproc`
-            make -j$(con) V=s || make -j1 V=s
+            make -j$con || make -j1 V=s
 
       - persist_to_workspace:
           root: ~/project
