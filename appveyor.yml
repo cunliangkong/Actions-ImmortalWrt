@@ -14,7 +14,7 @@ build_script:
   # 清理存储空间
   - sudo apt-get clean
   - sudo rm -rf /var/lib/apt/lists/*
-  - sudo rm -rf /tmp/*
+  # - sudo rm -rf /tmp/*
   - sudo rm -rf ~/.cache
   - echo "Disk space after cleanup:"
   - df -h
