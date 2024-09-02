@@ -75,7 +75,7 @@ jobs:
             cd ImmortalWrt
             if [ $(nproc) -gt 8 ]; then con=$(( $(nproc) / 2 + 3 )); else con=$(nproc); fi
             make defconfig
-            make -j$con V=s || make -j1 V=s
+            make -j$con V=0 || make -j1 V=s
 
       - persist_to_workspace:
           root: ~/project
