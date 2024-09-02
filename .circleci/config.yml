@@ -23,9 +23,7 @@ jobs:
       branch:
         type: string
         default: "openwrt-23.05"
-      multithreading:
-        type: boolean
-        default: true
+
     steps:
       - checkout
 
@@ -73,18 +71,10 @@ jobs:
 
       - run:
           name: 多线程编译 ImmortalWrt (Build ImmortalWrt multithreading)
-          when: << parameters.multithreading >>
           command: |
             cd ImmortalWrt
             make defconfig
             make -j$(nproc) || make -j1 V=s
-
-      - run:
-          name: 单线程编译 ImmortalWrt (Build ImmortalWrt single thread)
-          when: not << parameters.multithreading >>
-          command: |
-            cd ImmortalWrt
-            make -j1 V=s
 
       - persist_to_workspace:
           root: ~/project
@@ -99,4 +89,3 @@ workflows:
           owner: "immortalwrt"
           repo: "immortalwrt"
           branch: "openwrt-23.05"
-          multithreading: true
