@@ -74,7 +74,8 @@ jobs:
           command: |
             cd ImmortalWrt
             make defconfig
-            make -j$(nproc) || make -j1 V=s
+            [ `nproc` -gt 8 ] && con=$[`nproc`/2+3] || con=`nproc`
+            make -j$(con) V=s || make -j1 V=s
 
       - persist_to_workspace:
           root: ~/project
