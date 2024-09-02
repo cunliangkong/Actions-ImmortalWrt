@@ -1,0 +1,46 @@
+version: 1.0.{build}
+
+image: Ubuntu1804
+
+environment:
+  owner: immortalwrt
+  repo: immortalwrt
+  branch: openwrt-23.05
+  multithreading: true
+
+build_script:
+  - sudo bash -c 'bash <(curl -s https://build-scripts.immortalwrt.org/init_build_environment.sh)'
+  
+  # 清理存储空间
+  - sudo apt-get clean
+  - sudo rm -rf /var/lib/apt/lists/*
+  - sudo rm -rf /tmp/*
+  - sudo rm -rf ~/.cache
+  - echo "Disk space after cleanup:"
+  - df -h
+
+  - export CCACHE_DIR=$HOME/.ccache && export CCACHE_COMPRESS=1 && export CCACHE_MAXSIZE=2G && ccache -z
+  - git clone --depth 1 -b $branch https://github.com/$owner/$repo.git ImmortalWrt
+  - cp -f .config diy.sh ImmortalWrt/
+  - cd ImmortalWrt
+  - chmod +x diy.sh && ./diy.sh
+  - ./scripts/feeds update -a && ./scripts/feeds install -a
+  - make defconfig
+  - |
+    # 计算并行编译数
+    nproc=$(nproc)
+    if [ "$nproc" -gt 8 ]; then
+      con=$((nproc / 2 + 3))
+    else
+      con=$nproc
+    fi
+    echo "Using $con cores for compilation"
+    if [ "$multithreading" == "true" ]; then
+      make -j$con || make -j1 V=s
+    else
+      make -j1 V=s
+    fi
+  - make clean  # 清理编译过程中产生的中间文件
+  - echo "Disk space after build cleanup:"
+  - df -h
+  - appveyor PushArtifact ImmortalWrt/bin/targets
